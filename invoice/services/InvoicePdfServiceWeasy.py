@@ -106,6 +106,10 @@ class InvoicePdfServiceWeasy:
         """
         
         css += f"""
+        @page {{
+            margin: 5px;
+        }}
+        
         * {{
             font-family: '{font_family}', sans-serif;
             margin: 0;
@@ -140,23 +144,37 @@ class InvoicePdfServiceWeasy:
         
         css += f"""
         .container {{
-            padding: 5px;
+            padding: 0;
+            margin: 25px;
         }}
         
         .header {{
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            gap: 30px;
+        }}
+        
+        .left-header {{
+            flex: 1;
+        }}
+        
+        .right-header {{
+            flex: 1;
+            text-align: right;
         }}
         
         .logo {{
             max-width: 120px;
             max-height: 50px;
+            margin-bottom: 15px;
         }}
         
         .barcode {{
             max-width: 220px;
             max-height: 50px;
+            margin-bottom: 15px;
+            display: inline-block;
         }}
         
         .invoice-info, .company-info {{
@@ -283,23 +301,23 @@ class InvoicePdfServiceWeasy:
                         <div class="invoice-info">
                             <table>
                                 <tr>
-                                    <td class="bold">Invoice No:</td>
+                                    <td class="bold text-left">Invoice No:</td>
                                     <td class="text-right">{invoice_data.get('invoiceNumber', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td>Invoice Date:</td>
+                                    <td class="text-left">Invoice Date:</td>
                                     <td class="text-right">{invoice_date}</td>
                                 </tr>
                                 <tr>
-                                    <td>Payment Status:</td>
+                                    <td class="text-left">Payment Status:</td>
                                     <td class="text-right">{invoice_data.get('invoiceStatus', '').replace('_', ' ').title()}</td>
                                 </tr>
                                 <tr>
-                                    <td>Delivery Date:</td>
+                                    <td class="text-left">Delivery Date:</td>
                                     <td class="text-right">{delivery_date}</td>
                                 </tr>
                                 <tr>
-                                    <td class="bold">Invoice Amount:</td>
+                                    <td class="bold text-left">Invoice Amount:</td>
                                     <td class="text-right bold">{invoice_data.get('totalAmount', 0):.2f}</td>
                                 </tr>
                             </table>
@@ -312,31 +330,31 @@ class InvoicePdfServiceWeasy:
                         <div class="company-info">
                             <table>
                                 <tr>
-                                    <td>Company Name:</td>
+                                    <td class="text-left">Company Name:</td>
                                     <td class="text-right">{org.get('orgName', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td>Address:</td>
+                                    <td class="text-left">Address:</td>
                                     <td class="text-right">{org.get('orgAddressLine', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td>Postcode:</td>
+                                    <td class="text-left">Postcode:</td>
                                     <td class="text-right">{org.get('orgAddressPostcode', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td>TIN No:</td>
+                                    <td class="text-left">TIN No:</td>
                                     <td class="text-right">{org.get('orgTinNumber', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td>VAT Number:</td>
+                                    <td class="text-left">VAT Number:</td>
                                     <td class="text-right">{org.get('orgVatNumber', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td>Email Address:</td>
+                                    <td class="text-left">Email Address:</td>
                                     <td class="text-right">{org.get('orgEmail', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td>Contact No:</td>
+                                    <td class="text-left">Contact No:</td>
                                     <td class="text-right">{org.get('orgMobileNo', '')}</td>
                                 </tr>
                             </table>
