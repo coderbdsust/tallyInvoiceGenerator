@@ -3,6 +3,10 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from .services.InvoicePdfServiceWeasy import InvoicePdfServiceWeasy
 from django.http import HttpResponse
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 @api_view(['POST'])
 def generateInvoice(request):
@@ -11,6 +15,15 @@ def generateInvoice(request):
     """
     try:
         invoice_data = request.data
+        # Log request details for debugging
+        print(f"Request Method: {request.method}")
+        print(f"Content-Type: {request.content_type}")
+        print(f"Content-Length: {request.META.get('CONTENT_LENGTH', 'Unknown')}")
+        print(f"Content-Encoding: {request.META.get('HTTP_CONTENT_ENCODING', 'None')}")
+        print(f"Accept-Encoding: {request.META.get('HTTP_ACCEPT_ENCODING', 'None')}")
+        
+        print(f"Raw body length: {len(invoice_data)}")
+        
         if not invoice_data:
             return Response(
                 {'error': 'Invoice data is required'},

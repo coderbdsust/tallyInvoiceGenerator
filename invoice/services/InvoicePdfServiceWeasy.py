@@ -3,7 +3,7 @@ from weasyprint.text.fonts import FontConfiguration
 from django.conf import settings
 from django.template.loader import render_to_string
 import os
-from io import BytesIO
+from num2words_bd_inr import amount_in_words
 
 
 class InvoicePdfServiceWeasy:
@@ -45,7 +45,6 @@ class InvoicePdfServiceWeasy:
             light_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-Light.ttf')
             medium_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-Medium.ttf')
             semibold_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-SemiBold.ttf')
-            thin_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-Thin.ttf')
         else:
             font_family = 'Poppins'
             bold_font = os.path.join(self.font_dir, 'Poppins/Poppins-Bold.ttf')
@@ -501,5 +500,4 @@ class InvoicePdfServiceWeasy:
     
     def convert_amount_to_words(self, amount):
         """Convert amount to words"""
-        # TODO: Implement actual conversion
-        return "Amount in words"
+        return amount_in_words(amount, 'BDT','en', rounding=True)
