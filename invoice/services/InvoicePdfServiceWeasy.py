@@ -11,26 +11,118 @@ class InvoicePdfServiceWeasy:
     def __init__(self, locale='en'):
         self.locale = locale
         self.font_dir = settings.FONT_DIR
+        self.translations = self._get_translations()
+    
+    def _get_translations(self):
+        """Get translations based on locale"""
+        if self.locale == 'bn':
+            return {
+                'invoice_no': 'মূসক নম্বর',
+                'invoice_date': 'মূসক তারিখ',
+                'payment_status': 'পেমেন্ট অবস্থা',
+                'delivery_date': 'ডেলিভারি তারিখ',
+                'invoice_amount': 'টাকার পরিমাণ',
+                'company_name': 'কোম্পানির নাম',
+                'address': 'ঠিকানা',
+                'postcode': 'পোস্টকোড',
+                'tin_no': 'টিআইএন নম্বর',
+                'vat_number': 'ভ্যাট নম্বর',
+                'email_address': 'ইমেইল ঠিকানা',
+                'contact_no': 'যোগাযোগ নম্বর',
+                'billing_address': 'বিলিং ঠিকানা',
+                'customer_name': 'গ্রাহকের নাম',
+                'phone': 'ফোন',
+                'email': 'ইমেইল',
+                'purchase_history': 'ক্রয়কৃত পণ্য',
+                'sl': 'ক্রমিক',
+                'product_details': 'পণ্যের বিবরণ',
+                'unit_rate': 'একক মূল্য',
+                'units': 'একক',
+                'amount': 'পরিমাণ',
+                'customer_payment_history': 'গ্রাহক পেমেন্ট ইতিহাস',
+                'date': 'তারিখ',
+                'method': 'পদ্ধতি',
+                'ref': 'রেফ#',
+                'sub_total': 'উপমোট',
+                'total_tax': 'মোট কর',
+                'total_vat': 'মোট ভ্যাট',
+                'total_discount': 'মোট ছাড়',
+                'delivery_charge': 'ডেলিভারি চার্জ',
+                'total_amount': 'মোট পরিমাণ',
+                'total_paid': 'মোট পরিশোধিত',
+                'total_due': 'মোট বকেয়া',
+                'in_words': 'কথায়',
+                'notes': 'নোট',
+                'thank_you': 'আপনার ব্যবসার জন্য ধন্যবাদ! এই মূসক সম্পর্কে আপনার কোন প্রশ্ন থাকলে, অনুগ্রহ করে আমাদের সাথে যোগাযোগ করুন - contacts.tallyapp@gmail.com'
+            }
+        else:
+            return {
+                'invoice_no': 'Invoice No',
+                'invoice_date': 'Invoice Date',
+                'payment_status': 'Payment Status',
+                'delivery_date': 'Delivery Date',
+                'invoice_amount': 'Invoice Amount',
+                'company_name': 'Company Name',
+                'address': 'Address',
+                'postcode': 'Postcode',
+                'tin_no': 'TIN No',
+                'vat_number': 'VAT Number',
+                'email_address': 'Email Address',
+                'contact_no': 'Contact No',
+                'billing_address': 'Billing Address',
+                'customer_name': 'Customer Name',
+                'phone': 'Phone',
+                'email': 'Email',
+                'purchase_history': 'Purchase History',
+                'sl': 'SL',
+                'product_details': 'Product Details',
+                'unit_rate': 'Unit Rate',
+                'units': 'Units',
+                'amount': 'Amount',
+                'customer_payment_history': 'Customer Payment History',
+                'date': 'Date',
+                'method': 'Method',
+                'ref': 'Ref#',
+                'sub_total': 'Sub Total',
+                'total_tax': 'Total Tax',
+                'total_vat': 'Total Vat',
+                'total_discount': 'Total Discount',
+                'delivery_charge': 'Delivery Charge',
+                'total_amount': 'Total Amount',
+                'total_paid': 'Total Paid',
+                'total_due': 'Total Due',
+                'in_words': 'In words',
+                'notes': 'Notes',
+                'thank_you': 'Thank you for your business! If you have any questions about this invoice, please contact us at contacts.tallyapp@gmail.com'
+            }
     
     def generate_invoice_pdf(self, invoice_data):
         """Generate invoice PDF using WeasyPrint (better Bengali support)"""
         
-        # Render HTML template
-        html_content = self._generate_html(invoice_data)
-        
-        # CSS with font-face declarations
-        css_content = self._generate_css()
-        
-        # Font configuration for better Bengali rendering
-        font_config = FontConfiguration()
-        
-        # Generate PDF with font configuration
-        pdf = HTML(string=html_content).write_pdf(
-            stylesheets=[CSS(string=css_content, font_config=font_config)],
-            font_config=font_config
-        )
-        
-        return pdf
+        try:
+            # Render HTML template
+            html_content = self._generate_html(invoice_data)
+            
+            # CSS with font-face declarations
+            css_content = self._generate_css()
+            
+            # Font configuration for better Bengali rendering
+            font_config = FontConfiguration()
+            
+            # Generate PDF with font configuration
+            pdf = HTML(string=html_content).write_pdf(
+                stylesheets=[CSS(string=css_content, font_config=font_config)],
+                font_config=font_config
+            )
+            
+            return pdf
+        except Exception as e:  # Changed from 'Error' to 'Exception as e'
+            print(f"Error generating PDF: {e}")
+            # Or for more detailed traceback:
+            import traceback
+            traceback.print_exc()
+            raise  # Re-raise if you want the error to propagate
+            
     
     
     def _generate_css(self):
@@ -46,9 +138,14 @@ class InvoicePdfServiceWeasy:
             medium_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-Medium.ttf')
             semibold_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-SemiBold.ttf')
         else:
-            font_family = 'Poppins'
+            font_family = 'Poppins, NotoSansBengali'
             bold_font = os.path.join(self.font_dir, 'Poppins/Poppins-Bold.ttf')
             regular_font = os.path.join(self.font_dir, 'Poppins/Poppins-Regular.ttf')
+            black_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-Black.ttf')
+            extrabold_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-ExtraBold.ttf')
+            light_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-Light.ttf')
+            medium_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-Medium.ttf')
+            semibold_font = os.path.join(self.font_dir, 'Noto_Sans_Bengali/static/NotoSansBengali-SemiBold.ttf')
         
         css = f"""
         @font-face {{
@@ -66,9 +163,9 @@ class InvoicePdfServiceWeasy:
         }}
         """
         
-        # Add additional Bengali font weights if locale is Bengali
-        if self.locale == 'bn':
-            css += f"""
+        # Add additional Bengali
+    
+        css += f"""
         @font-face {{
             font-family: '{font_family}';
             src: url('file://{light_font}') format('truetype');
@@ -271,6 +368,9 @@ class InvoicePdfServiceWeasy:
     def _generate_html(self, invoice_data):
         """Generate HTML content for the invoice"""
         
+        # Get translations
+        t = self.translations
+        
         # Format dates
         def format_date(date_array):
             if isinstance(date_array, list) and len(date_array) == 3:
@@ -301,23 +401,23 @@ class InvoicePdfServiceWeasy:
                         <div class="invoice-info">
                             <table>
                                 <tr>
-                                    <td class="bold text-left">Invoice No:</td>
+                                    <td class="bold text-left">{t['invoice_no']}:</td>
                                     <td class="text-right">{invoice_data.get('invoiceNumber', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left">Invoice Date:</td>
+                                    <td class="text-left">{t['invoice_date']}:</td>
                                     <td class="text-right">{invoice_date}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left">Payment Status:</td>
+                                    <td class="text-left">{t['payment_status']}:</td>
                                     <td class="text-right">{invoice_data.get('invoiceStatus', '').replace('_', ' ').title()}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left">Delivery Date:</td>
+                                    <td class="text-left">{t['delivery_date']}:</td>
                                     <td class="text-right">{delivery_date}</td>
                                 </tr>
                                 <tr>
-                                    <td class="bold text-left">Invoice Amount:</td>
+                                    <td class="bold text-left">{t['invoice_amount']}:</td>
                                     <td class="text-right bold">{invoice_data.get('totalAmount', 0):.2f}</td>
                                 </tr>
                             </table>
@@ -330,31 +430,31 @@ class InvoicePdfServiceWeasy:
                         <div class="company-info">
                             <table>
                                 <tr>
-                                    <td class="text-left">Company Name:</td>
+                                    <td class="text-left">{t['company_name']}:</td>
                                     <td class="text-right">{org.get('orgName', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left">Address:</td>
+                                    <td class="text-left">{t['address']}:</td>
                                     <td class="text-right">{org.get('orgAddressLine', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left">Postcode:</td>
+                                    <td class="text-left">{t['postcode']}:</td>
                                     <td class="text-right">{org.get('orgAddressPostcode', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left">TIN No:</td>
+                                    <td class="text-left">{t['tin_no']}:</td>
                                     <td class="text-right">{org.get('orgTinNumber', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left">VAT Number:</td>
+                                    <td class="text-left">{t['vat_number']}:</td>
                                     <td class="text-right">{org.get('orgVatNumber', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left">Email Address:</td>
+                                    <td class="text-left">{t['email_address']}:</td>
                                     <td class="text-right">{org.get('orgEmail', '')}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left">Contact No:</td>
+                                    <td class="text-left">{t['contact_no']}:</td>
                                     <td class="text-right">{org.get('orgMobileNo', '')}</td>
                                 </tr>
                             </table>
@@ -365,26 +465,26 @@ class InvoicePdfServiceWeasy:
                 <div class="divider"></div>
                 
                 <!-- Billing Address -->
-                <div class="section-title">Billing Address</div>
+                <div class="section-title">{t['billing_address']}</div>
                 <table style="width: 100%;">
                     <tr>
-                        <td style="width: 20%;">Customer Name:</td>
+                        <td style="width: 20%;">{t['customer_name']}:</td>
                         <td>{customer.get('name', '')}</td>
                     </tr>
                     <tr>
-                        <td>Address:</td>
+                        <td>{t['address']}:</td>
                         <td>{customer.get('address', '')}</td>
                     </tr>
                     <tr>
-                        <td>Postcode:</td>
+                        <td>{t['postcode']}:</td>
                         <td>{customer.get('postcode', '')}</td>
                     </tr>
                     <tr>
-                        <td>Phone:</td>
+                        <td>{t['phone']}:</td>
                         <td>{customer.get('mobile', '')}</td>
                     </tr>
                     <tr>
-                        <td>Email:</td>
+                        <td>{t['email']}:</td>
                         <td>{customer.get('email', '')}</td>
                     </tr>
                 </table>
@@ -392,15 +492,15 @@ class InvoicePdfServiceWeasy:
                 <div class="divider"></div>
                 
                 <!-- Purchase History -->
-                <div class="section-title">Purchase History</div>
+                <div class="section-title">{t['purchase_history']}</div>
                 <table class="product-table">
                     <thead>
                         <tr>
-                            <th style="width: 5%;">SL</th>
-                            <th style="width: 40%;">Product Details</th>
-                            <th style="width: 20%;">Unit Rate</th>
-                            <th style="width: 15%;">Units</th>
-                            <th style="width: 20%;">Amount</th>
+                            <th style="width: 5%;">{t['sl']}</th>
+                            <th style="width: 40%;">{t['product_details']}</th>
+                            <th style="width: 20%;">{t['unit_rate']}</th>
+                            <th style="width: 15%;">{t['units']}</th>
+                            <th style="width: 20%;">{t['amount']}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -411,14 +511,14 @@ class InvoicePdfServiceWeasy:
                 <!-- Payment and Summary -->
                 <div class="bottom-section">
                     <div class="payment-section">
-                        <div class="section-title">Customer Payment History</div>
+                        <div class="section-title">{t['customer_payment_history']}</div>
                         <table class="payment-table">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Method</th>
-                                    <th>Ref#</th>
-                                    <th>Amount</th>
+                                    <th>{t['date']}</th>
+                                    <th>{t['method']}</th>
+                                    <th>{t['ref']}</th>
+                                    <th>{t['amount']}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -430,35 +530,35 @@ class InvoicePdfServiceWeasy:
                     <div class="summary-section">
                         <table class="summary-table">
                             <tr>
-                                <td>Sub Total:</td>
+                                <td>{t['sub_total']}:</td>
                                 <td class="text-right">{invoice_data.get('productSubTotal', 0):.2f}</td>
                             </tr>
                             <tr>
-                                <td>Total Tax: ({invoice_data.get('taxRate', 0)}%)</td>
+                                <td>{t['total_tax']}: ({invoice_data.get('taxRate', 0)}%)</td>
                                 <td class="text-right">{invoice_data.get('productTotalTax', 0):.2f}</td>
                             </tr>
                             <tr>
-                                <td>Total Vat: ({invoice_data.get('vatRate', 0)}%)</td>
+                                <td>{t['total_vat']}: ({invoice_data.get('vatRate', 0)}%)</td>
                                 <td class="text-right">{invoice_data.get('productTotalVat', 0):.2f}</td>
                             </tr>
                             <tr>
-                                <td>Total Discount:</td>
+                                <td>{t['total_discount']}:</td>
                                 <td class="text-right">{invoice_data.get('totalDiscount', 0):.2f}</td>
                             </tr>
                             <tr>
-                                <td>Delivery Charge:</td>
+                                <td>{t['delivery_charge']}:</td>
                                 <td class="text-right">{invoice_data.get('deliveryCharge', 0):.2f}</td>
                             </tr>
                             <tr class="bold">
-                                <td>Total Amount:</td>
+                                <td>{t['total_amount']}:</td>
                                 <td class="text-right">{invoice_data.get('totalAmount', 0):.2f}</td>
                             </tr>
                             <tr>
-                                <td>Total Paid:</td>
+                                <td>{t['total_paid']}:</td>
                                 <td class="text-right">{invoice_data.get('totalPaid', 0):.2f}</td>
                             </tr>
                             <tr>
-                                <td>Total Due:</td>
+                                <td>{t['total_due']}:</td>
                                 <td class="text-right">{invoice_data.get('remainingAmount', 0):.2f}</td>
                             </tr>
                         </table>
@@ -466,14 +566,14 @@ class InvoicePdfServiceWeasy:
                 </div>
                 
                 <div style="margin-top: 10px;">
-                    <span class="bold">In words:</span> {self.convert_amount_to_words(invoice_data.get('totalAmount', 0))}
+                    <span class="bold">{t['in_words']}:</span> {self.convert_amount_to_words(invoice_data.get('totalAmount', 0))}
                 </div>
                 
                 <div class="divider"></div>
                 
                 <!-- Notes -->
-                <div class="section-title">Notes</div>
-                <p>Thank you for your business! If you have any questions about this invoice, please contact us at contacts.tallyapp@gmail.com</p>
+                <div class="section-title">{t['notes']}</div>
+                <p>{t['thank_you']}</p>
             </div>
         </body>
         </html>
@@ -518,4 +618,4 @@ class InvoicePdfServiceWeasy:
     
     def convert_amount_to_words(self, amount):
         """Convert amount to words"""
-        return amount_in_words(amount, 'BDT','en', rounding=True)
+        return amount_in_words(amount, 'BDT', 'en', rounding=True)
